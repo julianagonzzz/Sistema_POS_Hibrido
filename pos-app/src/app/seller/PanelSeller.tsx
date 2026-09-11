@@ -328,7 +328,7 @@ export default function PanelSeller({
               }`}
             >
               <span>🛒</span>
-              <span>Crear Venta / POS (US_04)</span>
+              <span>Crear Venta / POS</span>
               {carrito.length > 0 && (
                 <span className="bg-emerald-500 text-slate-950 text-xs px-2 py-0.2 rounded-full font-extrabold">
                   {carrito.length}
@@ -345,7 +345,7 @@ export default function PanelSeller({
               }`}
             >
               <span>👤</span>
-              <span>Información y Clientes (US_03)</span>
+              <span>Información y Clientes</span>
             </button>
 
             <button
@@ -479,7 +479,7 @@ export default function PanelSeller({
                     onClick={() => setPestana("clientes")}
                     className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold cursor-pointer"
                   >
-                    + Registrar nuevo (US_03)
+                    + Registrar nuevo cliente
                   </button>
                 </div>
 
@@ -681,7 +681,7 @@ export default function PanelSeller({
                 <div className="flex items-center gap-2">
                   <span className="text-xl">📝</span>
                   <h3 className="font-bold text-slate-900 text-lg">
-                    Registro de Nuevo Cliente (US_03)
+                    Registro de Nuevo Cliente
                   </h3>
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
@@ -950,67 +950,110 @@ export default function PanelSeller({
       {/* MODAL DE COMPROBANTE / RECIBO DE VENTA EXITOSA                     */}
       {/* ================================================================= */}
       {reciboVenta && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-200">
-            <div className="text-center space-y-1">
-              <span className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 text-2xl flex items-center justify-center mx-auto mb-2">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-200 my-8">
+            {/* Cabecera del modal (visible en pantalla, oculta en impresión) */}
+            <div className="text-center space-y-1 print:hidden">
+              <span className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 text-xl font-bold flex items-center justify-center mx-auto mb-1">
                 ✓
               </span>
-              <h3 className="font-extrabold text-slate-900 text-lg">¡Venta Registrada con Éxito!</h3>
-              <p className="text-xs text-slate-500">
-                Ticket #<strong>{reciboVenta.id_venta}</strong> • Caja:{" "}
-                <strong>{reciboVenta.codigo_caja}</strong>
-              </p>
+              <h3 className="font-extrabold text-slate-900 text-base">Venta Completada</h3>
             </div>
 
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2">
-              <div className="flex justify-between text-slate-600">
-                <span>Cliente:</span>
-                <strong className="text-slate-900">{reciboVenta.cliente_nombre}</strong>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>Cédula:</span>
-                <span>{reciboVenta.cliente_cedula}</span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>Medio de Pago:</span>
-                <span className="font-semibold text-slate-800">{reciboVenta.medio_pago}</span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>Fecha:</span>
-                <span>{new Date(reciboVenta.fecha).toLocaleString("es-CO")}</span>
+            {/* Recibo térmico / comprobante limpio */}
+            <div
+              id="comprobante-impresion"
+              className="p-5 bg-amber-50/40 font-mono text-xs text-slate-800 rounded-xl border border-dashed border-slate-300 space-y-3 shadow-inner"
+            >
+              {/* Encabezado del ticket */}
+              <div className="text-center border-b border-dashed border-slate-300 pb-3 space-y-0.5">
+                <p className="font-extrabold text-sm tracking-wider uppercase">Sistema POS Híbrido</p>
+                <p className="text-[10px] text-slate-500">Punto de Venta Oficial</p>
+                <div className="text-[10px] text-slate-600 pt-1 flex justify-between">
+                  <span>Ticket: #{String(reciboVenta.id_venta).padStart(6, "0")}</span>
+                  <span>Caja: {reciboVenta.codigo_caja}</span>
+                </div>
+                <div className="text-[10px] text-slate-500 text-left">
+                  <span>Fecha: {new Date(reciboVenta.fecha).toLocaleString("es-CO")}</span>
+                </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-200 space-y-1">
-                <span className="font-bold text-[10px] uppercase text-slate-400 block">
-                  Productos Vendidos:
-                </span>
+              {/* Datos del Cliente y Vendedor */}
+              <div className="border-b border-dashed border-slate-300 pb-2 text-[11px] space-y-0.5">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Cliente:</span>
+                  <span className="font-bold truncate max-w-[170px]">{reciboVenta.cliente_nombre}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">C.C. / NIT:</span>
+                  <span>{reciboVenta.cliente_cedula}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Cajero:</span>
+                  <span>{reciboVenta.vendedor_nombre}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Pago:</span>
+                  <span className="font-semibold">{reciboVenta.medio_pago}</span>
+                </div>
+              </div>
+
+              {/* Detalle de Productos */}
+              <div className="border-b border-dashed border-slate-300 pb-2 space-y-1.5">
+                <div className="flex justify-between text-[10px] font-bold uppercase text-slate-500">
+                  <span>Cant. Descripción</span>
+                  <span>Total</span>
+                </div>
                 {reciboVenta.detalles.map((d) => (
-                  <div key={d.id_detalle} className="flex justify-between text-[11px]">
-                    <span className="text-slate-700">
-                      {d.cantidad}x {d.nombre}
-                    </span>
-                    <span className="font-mono font-semibold">{formatearCOP(d.subtotal)}</span>
+                  <div key={d.id_detalle} className="text-[11px] leading-tight">
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-slate-900 truncate max-w-[190px]">
+                        {d.cantidad}x {d.nombre}
+                      </span>
+                      <span className="font-bold">{formatearCOP(d.subtotal)}</span>
+                    </div>
+                    <div className="text-[10px] text-slate-400 pl-4">
+                      {d.cantidad} x {formatearCOP(d.precio_unitario)}
+                    </div>
                   </div>
                 ))}
               </div>
 
-              <div className="pt-2 border-t border-slate-300 flex justify-between text-sm font-extrabold text-slate-950">
-                <span>TOTAL PAGADO</span>
-                <span className="text-emerald-600">{formatearCOP(reciboVenta.total)}</span>
+              {/* Totales */}
+              <div className="space-y-1 pt-1 text-[11px]">
+                <div className="flex justify-between text-slate-600">
+                  <span>Subtotal:</span>
+                  <span>{formatearCOP(reciboVenta.subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>IVA (0%):</span>
+                  <span>$ 0</span>
+                </div>
+                <div className="flex justify-between text-sm font-black text-slate-950 pt-1 border-t border-slate-300">
+                  <span>TOTAL PAGADO:</span>
+                  <span>{formatearCOP(reciboVenta.total)}</span>
+                </div>
+              </div>
+
+              {/* Mensaje de pie de ticket */}
+              <div className="text-center pt-2 text-[10px] text-slate-400 space-y-0.5 border-t border-dashed border-slate-300">
+                <p>¡Gracias por su compra!</p>
+                <p>Conserve este tiquet para cualquier reclamo</p>
               </div>
             </div>
 
-            <div className="flex gap-2">
+            {/* Acciones (ocultas en la impresión) */}
+            <div className="flex gap-2 print:hidden pt-2">
               <button
                 onClick={() => window.print()}
-                className="flex-1 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                className="flex-1 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors flex items-center justify-center gap-1.5"
               >
-                🖨️ Imprimir Recibo
+                <span>🖨️</span>
+                <span>Imprimir</span>
               </button>
               <button
                 onClick={() => setReciboVenta(null)}
-                className="flex-1 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 cursor-pointer"
+                className="flex-1 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 cursor-pointer transition-colors"
               >
                 Nueva Venta
               </button>
