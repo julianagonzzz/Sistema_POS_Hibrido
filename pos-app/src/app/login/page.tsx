@@ -9,7 +9,7 @@ import Link from "next/link";
 // Mientras no existan, puedes dejar "/" en las tres.
 const RUTA_POR_ROL: Record<string, string> = {
   ADMIN: "/admin",
-  VENDEDOR: "/pos",
+  VENDEDOR: "/seller",
   CLIENTE: "/catalogo",
 };
 
