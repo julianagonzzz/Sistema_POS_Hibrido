@@ -1,6 +1,34 @@
 import { pool } from "./db";
 
 export type MedioPago = "EFECTIVO" | "DATAFONO" | "NEQUI" | "TRANSFERENCIA";
+export const MEDIOS_PAGO: MedioPago[] = ["EFECTIVO", "DATAFONO", "NEQUI", "TRANSFERENCIA"];
+
+/**
+ * US_14: Calcula el cambio a devolver en un pago.
+ * - EFECTIVO: cambio = recibido - total (error si el recibido no alcanza).
+ * - Datáfono / Nequi / Transferencia: se cobra el monto exacto, cambio = 0.
+ * Se redondea a pesos enteros para evitar errores de punto flotante.
+ */
+export function calcularCambio(
+  medio_pago: MedioPago,
+  total: number,
+  monto_recibido?: number | null
+): { monto_recibido: number; cambio: number } {
+  const totalRedondeado = Math.round(total);
+  if (medio_pago !== "EFECTIVO") {
+    return { monto_recibido: totalRedondeado, cambio: 0 };
+  }
+  const recibido = Math.round(Number(monto_recibido));
+  if (!Number.isFinite(recibido) || recibido <= 0) {
+    throw new Error("Debe ingresar el monto en efectivo recibido.");
+  }
+  if (recibido < totalRedondeado) {
+    throw new Error(
+      `El efectivo recibido ($${recibido.toLocaleString("es-CO")}) es menor al total a pagar ($${totalRedondeado.toLocaleString("es-CO")}).`
+    );
+  }
+  return { monto_recibido: recibido, cambio: recibido - totalRedondeado };
+}
 
 export interface ItemVentaSolicitud {
   id_producto: number;
@@ -27,6 +55,9 @@ export interface VentaCompleta {
   vendedor_nombre: string;
   codigo_caja: string;
   medio_pago: MedioPago;
+  monto_recibido: number;
+  cambio: number;
+  referencia_pago: string | null;
   subtotal: number;
   impuesto: number;
   total: number;
@@ -58,6 +89,8 @@ export async function registrarVenta(datos: {
   id_vendedor: number;
   codigo_caja: string;
   medio_pago: MedioPago;
+  monto_recibido?: number | null; // US_14: obligatorio solo en EFECTIVO
+  referencia_pago?: string | null; // US_14: opcional en pagos electrónicos
   items: ItemVentaSolicitud[];
 }): Promise<VentaCompleta> {
   if (!datos.items || datos.items.length === 0) {
@@ -158,6 +191,17 @@ export async function registrarVenta(datos: {
     const impuesto = 0; // Se puede configurar si aplica IVA
     const total = subtotalCalculado + impuesto;
 
+    
+    // US_14: validar el pago y calcular el cambio (si falla, se hace ROLLBACK
+    // y el stock descontado arriba vuelve a su valor original)
+    const pago = calcularCambio(datos.medio_pago, total, datos.monto_recibido);
+    const referencia =
+      datos.medio_pago === "EFECTIVO"
+        ? null
+        : (datos.referencia_pago ?? "").trim().slice(0, 60) || null;
+
+
+
     // 4. Insertar cabecera de venta
     const resVenta = await conexion.query<{
       id_venta: number;
@@ -165,9 +209,10 @@ export async function registrarVenta(datos: {
       estado: string;
     }>(
       `INSERT INTO venta (
-         id_cliente, id_vendedor, codigo_caja, medio_pago, canal,
-         subtotal, impuesto, total, estado
-       ) VALUES ($1, $2, $3, $4, 'FISICO', $5, $6, $7, 'COMPLETADA')
+        id_cliente, id_vendedor, codigo_caja, medio_pago, canal,
+        subtotal, impuesto, total, estado,
+        monto_recibido, cambio, referencia_pago
+       ) VALUES ($1, $2, $3, $4, 'FISICO', $5, $6, $7, 'COMPLETADA', $8, $9, $10)
        RETURNING id_venta, fecha, estado`,
       [
         datos.id_cliente,
@@ -177,6 +222,9 @@ export async function registrarVenta(datos: {
         subtotalCalculado,
         impuesto,
         total,
+        pago.monto_recibido,
+        pago.cambio,
+        referencia,
       ]
     );
 
@@ -215,6 +263,9 @@ export async function registrarVenta(datos: {
       vendedor_nombre: vendedorNombre,
       codigo_caja: datos.codigo_caja,
       medio_pago: datos.medio_pago,
+      monto_recibido: pago.monto_recibido,
+      cambio: pago.cambio,
+      referencia_pago: referencia,
       subtotal: subtotalCalculado,
       impuesto,
       total,
