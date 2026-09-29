@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listarProductos, listarCategorias, Producto } from "@/lib/productos";
 import CatalogoCliente from "./CatalogoCliente";
+import { BotonCarrito } from "@/app/carrito/CarritoContext";
 
 export default async function CatalogoPage() {
   let productos: Producto[] = [];
@@ -39,6 +40,7 @@ export default async function CatalogoPage() {
           </Link>
 
           <div className="flex items-center gap-3">
+            <BotonCarrito />
             <Link
               href="/"
               className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"

@@ -62,6 +62,10 @@ export default function PanelSeller({
   // Carrito de venta (US_04)
   const [carrito, setCarrito] = useState<ItemCarritoPOS[]>([]);
   const [medioPago, setMedioPago] = useState<MedioPago>("EFECTIVO");
+    // US_14: datos del pago según la modalidad
+  const [montoRecibido, setMontoRecibido] = useState<string>(""); // solo EFECTIVO
+  const [referenciaPago, setReferenciaPago] = useState<string>(""); // opcional en electrónicos
+  const [pagoConfirmado, setPagoConfirmado] = useState(false); // aprobación datáfono/Nequi/transf.
   const [procesandoVenta, setProcesandoVenta] = useState(false);
   const [errorVenta, setErrorVenta] = useState<string | null>(null);
   const [reciboVenta, setReciboVenta] = useState<VentaCompleta | null>(null);
@@ -106,6 +110,32 @@ export default function PanelSeller({
   }, [carrito]);
   const impuesto = 0;
   const total = subtotal + impuesto;
+  
+  // US_14: cálculo del cambio y validación del pago
+  const esEfectivo = medioPago === "EFECTIVO";
+  const montoRecibidoNum = Number(montoRecibido.replace(/\D/g, "")) || 0;
+  const cambio = esEfectivo ? montoRecibidoNum - Math.round(total) : 0;
+  const efectivoInsuficiente = esEfectivo && montoRecibidoNum < Math.round(total);
+  const pagoValido = esEfectivo ? !efectivoInsuficiente && montoRecibidoNum > 0 : pagoConfirmado;
+
+  // Billetes sugeridos para cobro rápido: valor exacto y redondeos hacia arriba
+  const sugerenciasEfectivo = useMemo(() => {
+    const t = Math.round(total);
+    if (t <= 0) return [];
+    const opciones = new Set<number>([t]);
+    for (const base of [10000, 20000, 50000, 100000]) {
+      opciones.add(Math.ceil(t / base) * base);
+    }
+    return [...opciones].sort((a, b) => a - b).slice(0, 4);
+  }, [total]);
+
+  function cambiarMedioPago(mp: MedioPago) {
+    setMedioPago(mp);
+    setMontoRecibido("");
+    setReferenciaPago("");
+    setPagoConfirmado(false);
+    setErrorVenta(null);
+  }
 
   // Acciones del carrito
   function agregarAlCarrito(producto: Producto) {
@@ -211,6 +241,16 @@ export default function PanelSeller({
       return;
     }
 
+    if (esEfectivo && efectivoInsuficiente) {
+      setErrorVenta("El efectivo recibido es menor al total a pagar.");
+      return;
+    }
+
+    if (!esEfectivo && !pagoConfirmado) {
+      setErrorVenta("Confirma que la transacción fue aprobada antes de registrar la venta.");
+      return;
+    }
+
     setErrorVenta(null);
     setProcesandoVenta(true);
 
@@ -221,6 +261,8 @@ export default function PanelSeller({
         body: JSON.stringify({
           id_cliente: clienteSeleccionado.id_usuario,
           medio_pago: medioPago,
+          monto_recibido: esEfectivo ? montoRecibidoNum : null,
+          referencia_pago: esEfectivo ? null : referenciaPago.trim() || null,
           items: carrito.map((item) => ({
             id_producto: item.producto.id_producto,
             cantidad: item.cantidad,
@@ -248,6 +290,9 @@ export default function PanelSeller({
       // Mostrar recibo y vaciar carrito
       setReciboVenta(datos.venta);
       setCarrito([]);
+      setMontoRecibido("");
+      setReferenciaPago("");
+      setPagoConfirmado(false);
     } catch {
       setErrorVenta("Error de conexión al procesar la venta.");
     } finally {
@@ -616,7 +661,7 @@ export default function PanelSeller({
                       <button
                         key={mp}
                         type="button"
-                        onClick={() => setMedioPago(mp)}
+                        onClick={() => cambiarMedioPago(mp)}
                         className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                           medioPago === mp
                             ? "bg-slate-900 text-white border-slate-900 shadow-xs"
@@ -639,14 +684,88 @@ export default function PanelSeller({
                     <span>{formatearCOP(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-xs text-slate-600">
-                    <span>IVA / Impuestos (0%)</span>
-                    <span>$ 0</span>
+                    <span>IVA</span>
+                    <span>Incluido en el precio</span>
                   </div>
                   <div className="flex justify-between text-base font-extrabold text-slate-950 pt-2 border-t border-slate-100">
                     <span>TOTAL A COBRAR</span>
                     <span className="text-emerald-600 text-lg">{formatearCOP(total)}</span>
                   </div>
                 </div>
+
+                {/* Detalle del pago según modalidad (US_14) */}
+                {carrito.length > 0 && esEfectivo && (
+                  <div className="p-3 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+                    <label htmlFor="monto-recibido" className="text-xs font-bold text-slate-700 block">
+                      Efectivo recibido
+                    </label>
+                    <input
+                      id="monto-recibido"
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="Ej: 50000"
+                      value={montoRecibido ? Number(montoRecibido).toLocaleString("es-CO") : ""}
+                      onChange={(e) => setMontoRecibido(e.target.value.replace(/\D/g, ""))}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                    />
+                    <div className="flex flex-wrap gap-1.5">
+                      {sugerenciasEfectivo.map((v) => (
+                        <button
+                          key={v}
+                          type="button"
+                          onClick={() => setMontoRecibido(String(v))}
+                          className="px-2 py-1 rounded-lg text-[11px] font-semibold bg-white border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 cursor-pointer"
+                        >
+                          {v === Math.round(total) ? "Exacto" : formatearCOP(v)}
+                        </button>
+                      ))}
+                    </div>
+                    {montoRecibido !== "" && (
+                      efectivoInsuficiente ? (
+                        <p className="text-xs font-semibold text-rose-600">
+                          Faltan {formatearCOP(Math.round(total) - montoRecibidoNum)}
+                        </p>
+                      ) : (
+                        <div className="flex justify-between items-center text-sm font-extrabold text-slate-900">
+                          <span>CAMBIO A DEVOLVER</span>
+                          <span className="text-emerald-600 text-lg">{formatearCOP(cambio)}</span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+
+                {carrito.length > 0 && !esEfectivo && (
+                  <div className="p-3 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+                    <p className="text-xs text-slate-600">
+                      {medioPago === "DATAFONO" && "Digita en el datáfono el monto exacto:"}
+                      {medioPago === "NEQUI" && "Solicita al cliente enviar por Nequi el monto exacto:"}
+                      {medioPago === "TRANSFERENCIA" && "Solicita al cliente transferir el monto exacto:"}
+                    </p>
+                    <p className="text-xl font-extrabold text-slate-900 text-center">{formatearCOP(total)}</p>
+                    <label htmlFor="referencia-pago" className="text-xs font-bold text-slate-700 block">
+                      N.º de aprobación / referencia <span className="font-normal text-slate-400">(opcional)</span>
+                    </label>
+                    <input
+                      id="referencia-pago"
+                      type="text"
+                      maxLength={60}
+                      placeholder={medioPago === "DATAFONO" ? "Ej: 004512" : "Ej: M1234567"}
+                      value={referenciaPago}
+                      onChange={(e) => setReferenciaPago(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                    />
+                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={pagoConfirmado}
+                        onChange={(e) => setPagoConfirmado(e.target.checked)}
+                        className="w-4 h-4 accent-emerald-600"
+                      />
+                      Transacción aprobada
+                    </label>
+                  </div>
+                )}
 
                 {errorVenta && (
                   <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700">
@@ -656,9 +775,9 @@ export default function PanelSeller({
 
                 <button
                   onClick={procesarCreacionVenta}
-                  disabled={procesandoVenta || carrito.length === 0 || !clienteSeleccionado}
+                  disabled={procesandoVenta || carrito.length === 0 || !clienteSeleccionado || !pagoValido}
                   className={`w-full py-3.5 rounded-xl font-bold text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 ${
-                    procesandoVenta || carrito.length === 0 || !clienteSeleccionado
+                    procesandoVenta || carrito.length === 0 || !clienteSeleccionado || !pagoValido                    
                       ? "bg-slate-200 text-slate-400 cursor-not-allowed"
                       : "bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg"
                   }`}
@@ -1026,13 +1145,30 @@ export default function PanelSeller({
                   <span>{formatearCOP(reciboVenta.subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
-                  <span>IVA (0%):</span>
-                  <span>$ 0</span>
+                  <span>IVA:</span>
+                  <span>Incluido</span>
                 </div>
                 <div className="flex justify-between text-sm font-black text-slate-950 pt-1 border-t border-slate-300">
                   <span>TOTAL PAGADO:</span>
                   <span>{formatearCOP(reciboVenta.total)}</span>
                 </div>
+                                {/* Desglose del pago (US_14) */}
+                <div className="flex justify-between text-slate-600">
+                  <span>{reciboVenta.medio_pago === "EFECTIVO" ? "Efectivo recibido:" : "Monto cobrado:"}</span>
+                  <span>{formatearCOP(Number(reciboVenta.monto_recibido))}</span>
+                </div>
+                {reciboVenta.medio_pago === "EFECTIVO" && (
+                  <div className="flex justify-between font-bold text-slate-900">
+                    <span>Cambio:</span>
+                    <span>{formatearCOP(Number(reciboVenta.cambio))}</span>
+                  </div>
+                )}
+                {reciboVenta.referencia_pago && (
+                  <div className="flex justify-between text-slate-600">
+                    <span>Ref. aprobación:</span>
+                    <span>{reciboVenta.referencia_pago}</span>
+                  </div>
+                )}
               </div>
 
               {/* Mensaje de pie de ticket */}

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { obtenerSesion } from "@/lib/sesion";
 import { obtenerInfoVendedor } from "@/lib/vendedores";
-import { registrarVenta, listarVentasPorVendedor, MedioPago } from "@/lib/ventas";
 
-const MEDIOS_PAGO_VALIDOS: MedioPago[] = ["EFECTIVO", "DATAFONO", "NEQUI", "TRANSFERENCIA"];
+import { registrarVenta, listarVentasPorVendedor, MedioPago, MEDIOS_PAGO } from "@/lib/ventas";
+const MEDIOS_PAGO_VALIDOS: MedioPago[] = MEDIOS_PAGO;
 
 async function verificarVendedor() {
   const sesion = await obtenerSesion();
@@ -41,9 +41,10 @@ export async function GET() {
 }
 
 /**
- * POST /api/seller/ventas (US_04)
- * Registra una compra con productos, calcula el total, descuenta stock y guarda la transacción.
- */
+    * POST /api/seller/ventas (US_04, US_14)
+    * Registra una compra con productos, calcula el total, valida el pago
+    * (monto recibido y cambio en efectivo), descuenta stock y guarda la transacción.
+*/
 export async function POST(request: NextRequest) {
   const check = await verificarVendedor();
   if (check.error) return check.error;
@@ -53,6 +54,22 @@ export async function POST(request: NextRequest) {
     const id_cliente = Number(cuerpo.id_cliente);
     const medio_pago = String(cuerpo.medio_pago ?? "").toUpperCase() as MedioPago;
     const items = cuerpo.items;
+
+    // US_14: desglose del pago
+    const monto_recibido =
+      cuerpo.monto_recibido === undefined || cuerpo.monto_recibido === null || cuerpo.monto_recibido === ""
+        ? null
+        : Number(cuerpo.monto_recibido);
+    const referencia_pago = cuerpo.referencia_pago ? String(cuerpo.referencia_pago) : null;
+
+    if (medio_pago === "EFECTIVO" && (monto_recibido === null || isNaN(monto_recibido))) {
+      return NextResponse.json(
+        { error: "Para pagos en efectivo debe indicar el monto recibido." },
+        { status: 400 }
+      );
+    }
+
+    
 
     if (!id_cliente || isNaN(id_cliente)) {
       return NextResponse.json(
@@ -80,6 +97,8 @@ export async function POST(request: NextRequest) {
       id_vendedor: check.vendedor.id_usuario,
       codigo_caja: check.vendedor.codigo_caja,
       medio_pago,
+      monto_recibido,
+      referencia_pago,
       items: items.map((it: { id_producto: number; cantidad: number }) => ({
         id_producto: Number(it.id_producto),
         cantidad: Number(it.cantidad),
