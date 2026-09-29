@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS producto (
     descripcion TEXT,
     precio DECIMAL(12, 2) NOT NULL CHECK (precio >= 0),
     cantidad_stock INTEGER NOT NULL DEFAULT 0 CHECK (cantidad_stock >= 0),
+    stock_minimo INTEGER NOT NULL DEFAULT 5 CHECK (stock_minimo >= 0),
     categoria VARCHAR(80) NOT NULL,
     genero VARCHAR(20) DEFAULT 'Unisex',
     talla VARCHAR(20) DEFAULT 'Única',

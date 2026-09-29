@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import GestionInventario from "./inventario/GestionInventario";
 
 // Mismo tipo que expone lib/administracion.ts en el servidor;
 // se repite aquí porque este archivo corre en el navegador.
@@ -34,6 +35,7 @@ const FORMULARIO_VACIO: FormularioVendedor = {
 };
 
 export default function PanelAdmin({ nombreAdmin }: { nombreAdmin: string }) {
+    const [seccionActiva, setSeccionActiva] = useState<"vendedores" | "inventario">("vendedores");
     const [vendedores, setVendedores] = useState<Vendedor[]>([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -121,13 +123,43 @@ export default function PanelAdmin({ nombreAdmin }: { nombreAdmin: string }) {
 
     return (
         <main className="flex-1 bg-zinc-50 px-6 py-10">
-            <div className="mx-auto max-w-4xl space-y-8">
+            <div className="mx-auto max-w-5xl space-y-8">
                 <header>
                     <h1 className="text-2xl font-semibold text-zinc-900">Panel de administrador</h1>
                     <p className="mt-1 text-sm text-zinc-500">Sesión activa: {nombreAdmin}</p>
                 </header>
 
-                {/* Formulario: crear vendedor */}
+                {/* Selector de módulos del Administrador */}
+                <nav className="flex space-x-2 border-b border-zinc-200 pb-3">
+                    <button
+                        type="button"
+                        onClick={() => setSeccionActiva("vendedores")}
+                        className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                            seccionActiva === "vendedores"
+                                ? "bg-zinc-900 text-white shadow-sm"
+                                : "bg-white text-zinc-600 hover:text-zinc-900 border border-zinc-200"
+                        }`}
+                    >
+                        👥 Vendedores y Cajas
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setSeccionActiva("inventario")}
+                        className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all flex items-center gap-2 ${
+                            seccionActiva === "inventario"
+                                ? "bg-zinc-900 text-white shadow-sm"
+                                : "bg-white text-zinc-600 hover:text-zinc-900 border border-zinc-200"
+                        }`}
+                    >
+                        <span>📦 Inventario y Reposición</span>
+                    </button>
+                </nav>
+
+                {seccionActiva === "inventario" ? (
+                    <GestionInventario />
+                ) : (
+                    <>
+                        {/* Formulario: crear vendedor */}
                 <section className="rounded-2xl border border-zinc-200 bg-white p-6">
                     <h2 className="text-lg font-medium text-zinc-900">Crear vendedor</h2>
                     <p className="mt-1 text-sm text-zinc-500">
@@ -253,6 +285,8 @@ export default function PanelAdmin({ nombreAdmin }: { nombreAdmin: string }) {
                         </div>
                     )}
                 </section>
+                    </>
+                )}
             </div>
         </main>
     );

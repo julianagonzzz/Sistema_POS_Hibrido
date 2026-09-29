@@ -6,6 +6,7 @@ export interface Producto {
   descripcion: string | null;
   precio: number;
   cantidad_stock: number;
+  stock_minimo?: number;
   categoria: string;
   genero: string | null;
   talla: string | null;
@@ -20,6 +21,7 @@ interface ProductoFila {
   descripcion: string | null;
   precio: string | number;
   cantidad_stock: number;
+  stock_minimo?: number;
   categoria: string;
   genero: string | null;
   talla: string | null;
