@@ -39,8 +39,9 @@ CREATE TABLE IF NOT EXISTS vendedor (
     turno VARCHAR(20)
 );
 
--- Modificar tabla cliente para asociar punto de venta y vendedor de registro (US_03)
+-- Modificar tabla cliente para asociar punto de venta, vendedor de registro y ciudad (US_03 y US_10)
 ALTER TABLE cliente
+    ADD COLUMN IF NOT EXISTS ciudad VARCHAR(100),
     ADD COLUMN IF NOT EXISTS punto_venta VARCHAR(50),
     ADD COLUMN IF NOT EXISTS id_vendedor_registro INTEGER REFERENCES vendedor(id_usuario);
 
@@ -62,14 +63,14 @@ CREATE TABLE IF NOT EXISTS producto (
 );
 
 
--- 3. TABLAS DE VENTAS (US_04)
+-- 3. TABLAS DE VENTAS (US_04, US_10, US_14)
 CREATE TABLE IF NOT EXISTS venta (
     id_venta SERIAL PRIMARY KEY,
     fecha TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     id_cliente INTEGER REFERENCES usuario(id_usuario),
     id_vendedor INTEGER REFERENCES vendedor(id_usuario),
     codigo_caja VARCHAR(20) NOT NULL,
-    medio_pago VARCHAR(30) NOT NULL CHECK (medio_pago IN ('EFECTIVO', 'DATAFONO', 'NEQUI', 'TRANSFERENCIA')),
+    medio_pago VARCHAR(30) NOT NULL CHECK (medio_pago IN ('EFECTIVO', 'DATAFONO', 'NEQUI', 'TRANSFERENCIA', 'TARJETA_CREDITO', 'PSE')),
     canal VARCHAR(20) NOT NULL DEFAULT 'FISICO',
     subtotal DECIMAL(12, 2) NOT NULL CHECK (subtotal >= 0),
     impuesto DECIMAL(12, 2) NOT NULL DEFAULT 0 CHECK (impuesto >= 0),
@@ -77,6 +78,9 @@ CREATE TABLE IF NOT EXISTS venta (
     monto_recibido DECIMAL(12, 2) CHECK (monto_recibido IS NULL OR monto_recibido >= total),
     cambio DECIMAL(12, 2) NOT NULL DEFAULT 0 CHECK (cambio >= 0),
     referencia_pago VARCHAR(60),
+    direccion_envio VARCHAR(255),
+    ciudad_envio VARCHAR(100),
+    telefono_envio VARCHAR(30),
     estado VARCHAR(20) NOT NULL DEFAULT 'COMPLETADA'
 );
 

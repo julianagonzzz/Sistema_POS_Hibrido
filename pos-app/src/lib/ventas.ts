@@ -1,7 +1,7 @@
 import { pool } from "./db";
 
-export type MedioPago = "EFECTIVO" | "DATAFONO" | "NEQUI" | "TRANSFERENCIA";
-export const MEDIOS_PAGO: MedioPago[] = ["EFECTIVO", "DATAFONO", "NEQUI", "TRANSFERENCIA"];
+export type MedioPago = "EFECTIVO" | "DATAFONO" | "NEQUI" | "TRANSFERENCIA" | "TARJETA_CREDITO" | "PSE";
+export const MEDIOS_PAGO: MedioPago[] = ["EFECTIVO", "DATAFONO", "NEQUI", "TRANSFERENCIA", "TARJETA_CREDITO", "PSE"];
 
 /**
  * US_14: Calcula el cambio a devolver en un pago.
