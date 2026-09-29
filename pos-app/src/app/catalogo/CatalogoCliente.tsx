@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
 import { Producto } from "@/lib/productos";
+import { useCarrito } from "@/app/carrito/CarritoContext";
 
 interface Props {
   productosIniciales: Producto[];
@@ -28,6 +28,27 @@ const ICONOS_CATEGORIA: Record<string, string> = {
 export default function CatalogoCliente({ productosIniciales, categorias }: Props) {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>("Todos");
   const [busqueda, setBusqueda] = useState<string>("");
+
+    // US_09: carrito de compras
+  const { items: itemsCarrito, agregar } = useCarrito();
+  const [avisos, setAvisos] = useState<Record<number, { ok: boolean; texto: string }>>({});
+  function agregarAlCarrito(prod: Producto) {
+    const r = agregar(prod, 1);
+    setAvisos((prev) => ({
+      ...prev,
+      [prod.id_producto]: r.ok
+        ? { ok: true, texto: "✓ Agregado al carrito" }
+        : { ok: false, texto: r.mensaje ?? "No se pudo agregar." },
+    }));
+    // El aviso desaparece a los 2.5 segundos
+    setTimeout(() => {
+      setAvisos((prev) => {
+        const copia = { ...prev };
+        delete copia[prod.id_producto];
+        return copia;
+      });
+    }, 2500);
+  }
 
   const todasLasCategorias = ["Todos", ...categorias];
 
@@ -177,13 +198,30 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
                     </span>
                   </div>
 
-                  <Link
-                    href="/login"
-                    className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"
+                                    <button
+                    type="button"
+                    onClick={() => agregarAlCarrito(prod)}
+                    disabled={prod.cantidad_stock <= 0}
+                    className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors cursor-pointer disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed"
                   >
-                    Comprar
-                  </Link>
+                    {prod.cantidad_stock <= 0
+                      ? "Agotado"
+                      : `🛒 Agregar${
+                          (itemsCarrito.find((i) => i.id_producto === prod.id_producto)?.cantidad ?? 0) > 0
+                            ? ` (${itemsCarrito.find((i) => i.id_producto === prod.id_producto)?.cantidad})`
+                            : ""
+                        }`}
+                  </button>
                 </div>
+                {avisos[prod.id_producto] && (
+                  <p
+                    className={`mt-2 text-[11px] font-semibold ${
+                      avisos[prod.id_producto].ok ? "text-emerald-600" : "text-rose-600"
+                    }`}
+                  >
+                    {avisos[prod.id_producto].texto}
+                  </p>
+                )}
               </div>
             </div>
           ))}
