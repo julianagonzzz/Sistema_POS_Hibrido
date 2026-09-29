@@ -1,5 +1,5 @@
 -- =====================================================================
--- 07_stock_minimo_y_reposicion.sql: US_13 - Gestión de inventario,
+-- 08_stock_minimo_y_reposicion.sql: US_13 - Gestión de inventario,
 -- reposición y alertas de stock
 -- =====================================================================
 

@@ -74,6 +74,9 @@ CREATE TABLE IF NOT EXISTS venta (
     subtotal DECIMAL(12, 2) NOT NULL CHECK (subtotal >= 0),
     impuesto DECIMAL(12, 2) NOT NULL DEFAULT 0 CHECK (impuesto >= 0),
     total DECIMAL(12, 2) NOT NULL CHECK (total >= 0),
+    monto_recibido DECIMAL(12, 2) CHECK (monto_recibido IS NULL OR monto_recibido >= total),
+    cambio DECIMAL(12, 2) NOT NULL DEFAULT 0 CHECK (cambio >= 0),
+    referencia_pago VARCHAR(60),
     estado VARCHAR(20) NOT NULL DEFAULT 'COMPLETADA'
 );
 
