@@ -52,28 +52,27 @@ export interface ResumenVentasDiarias extends ResumenVentasHora {
  * Obtiene el reporte de ventas del día especificado (por defecto la fecha actual).
  */
 export async function obtenerReporteDiario(fechaFiltro?: string): Promise<ReporteDiarioData> {
-    // Si no se especifica fecha, se usa la fecha actual de la BD
+    // Si no se especifica fecha, se usa la fecha actual de Colombia (America/Bogota)
     const fechaRes = await pool.query(
         fechaFiltro
-            ? "SELECT $1::DATE as fecha_dia"
-            : "SELECT CURRENT_DATE as fecha_dia",
+            ? "SELECT TO_CHAR($1::DATE, 'YYYY-MM-DD') as fecha_dia"
+            : "SELECT TO_CHAR(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota', 'YYYY-MM-DD') as fecha_dia",
         fechaFiltro ? [fechaFiltro] : []
     );
-    const fechaDia = fechaRes.rows[0].fecha_dia;
-    const fechaISO = new Date(fechaDia).toISOString().split("T")[0];
+    const fechaISO = fechaRes.rows[0].fecha_dia;
 
-    // 1. Desglose horario del día
+    // 1. Desglose horario del día en hora local
     const queryHoras = `
         SELECT 
-            TO_CHAR(v.fecha, 'HH24:00') as hora,
+            TO_CHAR(v.fecha AT TIME ZONE 'America/Bogota', 'HH24:00') as hora,
             SUM(CASE WHEN v.canal = 'FISICO' OR v.id_vendedor IS NOT NULL THEN v.total ELSE 0 END) as total_fisico,
             SUM(CASE WHEN v.canal = 'ONLINE' OR v.id_vendedor IS NULL THEN v.total ELSE 0 END) as total_online,
             COUNT(CASE WHEN v.canal = 'FISICO' OR v.id_vendedor IS NOT NULL THEN 1 END) as volumen_fisico,
             COUNT(CASE WHEN v.canal = 'ONLINE' OR v.id_vendedor IS NULL THEN 1 END) as volumen_online,
             SUM(v.total) as total_general
         FROM venta v
-        WHERE v.fecha::DATE = $1::DATE
-        GROUP BY TO_CHAR(v.fecha, 'HH24:00')
+        WHERE (v.fecha AT TIME ZONE 'America/Bogota')::DATE = $1::DATE
+        GROUP BY TO_CHAR(v.fecha AT TIME ZONE 'America/Bogota', 'HH24:00')
         ORDER BY hora ASC
     `;
     const resHoras = await pool.query(queryHoras, [fechaISO]);
@@ -111,7 +110,7 @@ export async function obtenerReporteDiario(fechaFiltro?: string): Promise<Report
             SUM(v.total) as total,
             COUNT(*) as cantidad
         FROM venta v
-        WHERE v.fecha::DATE = $1::DATE
+        WHERE (v.fecha AT TIME ZONE 'America/Bogota')::DATE = $1::DATE
         GROUP BY v.medio_pago
         ORDER BY total DESC
     `;
@@ -126,7 +125,7 @@ export async function obtenerReporteDiario(fechaFiltro?: string): Promise<Report
     const queryTransacciones = `
         SELECT 
             v.id_venta,
-            TO_CHAR(v.fecha, 'HH24:MI') as hora,
+            TO_CHAR(v.fecha AT TIME ZONE 'America/Bogota', 'HH24:MI') as hora,
             v.canal,
             v.medio_pago,
             v.codigo_caja,
@@ -138,7 +137,7 @@ export async function obtenerReporteDiario(fechaFiltro?: string): Promise<Report
         LEFT JOIN usuario u ON u.id_usuario = v.id_cliente
         LEFT JOIN vendedor vend ON vend.id_usuario = v.id_vendedor
         LEFT JOIN usuario vend_u ON vend_u.id_usuario = vend.id_usuario
-        WHERE v.fecha::DATE = $1::DATE
+        WHERE (v.fecha AT TIME ZONE 'America/Bogota')::DATE = $1::DATE
         ORDER BY v.fecha DESC
     `;
     const resTx = await pool.query(queryTransacciones, [fechaISO]);
