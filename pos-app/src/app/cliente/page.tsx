@@ -83,22 +83,21 @@ export default async function ClientePage() {
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                     <Link
                         href="/catalogo"
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2.5 group"
                     >
-                        <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl">
-                            H
-                        </div>
-
-                        <div>
-                            <span className="text-xl font-extrabold text-slate-900">
-                                Híbrido<span className="text-indigo-600">POS</span>
-                            </span>
-                        </div>
+                        <img
+                            src="/images/nexovolk-logo.png"
+                            alt="NexoVolk"
+                            className="w-10 h-10 rounded-xl object-contain shadow-xs"
+                        />
+                        <span className="text-xl font-black text-slate-900">
+                            Nexo<span className="text-orange-500">Volk</span>
+                        </span>
                     </Link>
 
                     <Link
                         href="/catalogo"
-                        className="text-sm font-semibold text-indigo-600 hover:text-indigo-800"
+                        className="text-sm font-semibold text-blue-600 hover:text-blue-800"
                     >
                         ← Volver al catálogo
                     </Link>

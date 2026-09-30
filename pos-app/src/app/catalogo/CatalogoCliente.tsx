@@ -18,15 +18,7 @@ function formatearPrecio(valor: number): string {
   }).format(valor);
 }
 
-const ICONOS_CATEGORIA: Record<string, string> = {
-  "Todos": "⚡",
-  "Celulares": "📱",
-  "Computadores": "💻",
-  "Televisores": "📺",
-  "Videojuegos": "🎮",
-  "Accesorios": "⌨️",
-  "Electrodomésticos": "🍳",
-};
+
 
 export default function CatalogoCliente({ productosIniciales, categorias }: Props) {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>("Todos");
@@ -75,8 +67,10 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
         <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
           {/* Buscador de texto */}
           <div className="relative flex-1 max-w-md">
-            <span className="absolute inset-y-0 left-3 flex items-center text-slate-400 select-none">
-              🔍
+            <span className="absolute inset-y-0 left-3 flex items-center text-slate-400 select-none pointer-events-none">
+              <svg className="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
             </span>
             <input
               type="text"
@@ -104,21 +98,19 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
         {/* Pestañas / Botones de Categorías */}
         <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
           {todasLasCategorias.map((cat) => {
-            const icono = ICONOS_CATEGORIA[cat] || "🏷️";
             const activa = categoriaSeleccionada === cat;
             return (
               <button
                 key={cat}
                 type="button"
                 onClick={() => setCategoriaSeleccionada(cat)}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   activa
                     ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                     : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                 }`}
               >
-                <span>{icono}</span>
-                <span>{cat}</span>
+                {cat}
               </button>
             );
           })}
@@ -128,8 +120,12 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
       {/* Grid de Productos */}
       {productosFiltrados.length === 0 ? (
         <div className="p-12 text-center bg-white rounded-2xl border border-slate-200">
-          <span className="text-4xl">🔍</span>
-          <h3 className="text-lg font-bold text-slate-800 mt-2">No se encontraron productos</h3>
+          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+            <svg className="w-6 h-6 stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-bold text-slate-800 mt-3">No se encontraron productos</h3>
           <p className="text-sm text-slate-500 mt-1">
             Intenta con otro término de búsqueda o selecciona otra categoría.
           </p>
@@ -168,7 +164,7 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
                   {prod.cantidad_stock > 0 ? `Stock: ${prod.cantidad_stock}` : "Agotado"}
                 </span>
                 {(prod.talla || prod.genero) && (
-                  <span className="absolute bottom-3 left-3 text-[10px] font-semibold px-2 py-0.5 bg-slate-900/80 text-white rounded-md backdrop-blur-xs shadow-xs">
+                  <span className="absolute bottom-3 left-3 text-[10px] font-bold px-2 py-0.5 bg-white/95 text-slate-700 rounded-md backdrop-blur-xs border border-slate-200 shadow-xs">
                     {prod.genero && prod.genero !== "Unisex" ? `${prod.genero} • ` : ""}
                     {prod.talla && prod.talla !== "Única" ? prod.talla : "Tech"}
                   </span>

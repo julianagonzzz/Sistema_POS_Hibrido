@@ -63,9 +63,16 @@ export default function CarritoPage() {
           <Link href="/catalogo" className="text-sm font-medium text-slate-600 hover:text-slate-900">
             ← Seguir comprando
           </Link>
-          <span className="font-extrabold text-slate-900">
-            Híbrido<span className="text-indigo-600">POS</span>
-          </span>
+          <Link href="/" className="flex items-center gap-2 group">
+            <img
+              src="/images/nexovolk-logo.png"
+              alt="NexoVolk"
+              className="w-8 h-8 rounded-lg object-contain shadow-xs group-hover:scale-105 transition-transform"
+            />
+            <span className="font-black text-slate-900">
+              Nexo<span className="text-orange-500">Volk</span>
+            </span>
+          </Link>
         </div>
       </header>
 

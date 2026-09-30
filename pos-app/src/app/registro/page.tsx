@@ -69,9 +69,19 @@ export default function RegistroPage() {
   }
 
   return (
-    <main className="flex-1 flex items-center justify-center p-6">
-      <div className="w-full max-w-sm border border-zinc-200 rounded-2xl p-8 bg-white">
-        <h1 className="text-xl font-semibold text-zinc-900">Crear cuenta</h1>
+    <main className="flex-1 flex items-center justify-center p-6 bg-slate-50 min-h-screen">
+      <div className="w-full max-w-sm border border-slate-200 rounded-2xl p-8 bg-white shadow-xs">
+        <div className="flex items-center gap-3 mb-6">
+          <img
+            src="/images/nexovolk-logo.png"
+            alt="NexoVolk"
+            className="w-10 h-10 rounded-xl object-contain shadow-xs"
+          />
+          <span className="text-xl font-black tracking-tight text-slate-900">
+            Nexo<span className="text-orange-500">Volk</span>
+          </span>
+        </div>
+        <h1 className="text-xl font-bold text-zinc-900">Crear cuenta</h1>
         <p className="text-sm text-zinc-500 mt-1">Para comprar en la tienda en línea.</p>
 
         <form onSubmit={manejarEnvio} className="mt-6 space-y-4">
@@ -156,7 +166,7 @@ export default function RegistroPage() {
           <button
             type="submit"
             disabled={enviando}
-            className="w-full rounded-lg bg-zinc-900 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+            className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 shadow-xs cursor-pointer transition-colors"
           >
             {enviando ? "Creando cuenta..." : "Crear cuenta"}
           </button>
@@ -164,7 +174,7 @@ export default function RegistroPage() {
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           ¿Ya tienes cuenta?{" "}
-          <Link href="/login" className="text-zinc-900 underline">
+          <Link href="/login" className="text-blue-600 hover:text-blue-700 underline font-medium">
             Inicia sesión
           </Link>
         </p>

@@ -555,7 +555,7 @@ export default function GestionInventario() {
                               ? "bg-red-600 text-white hover:bg-red-700 ring-2 ring-red-300 ring-offset-1"
                               : esCritico
                               ? "bg-amber-600 text-white hover:bg-amber-700"
-                              : "bg-zinc-900 text-white hover:bg-zinc-800"
+                              : "bg-blue-600 text-white hover:bg-blue-700"
                           }`}
                         >
                           + Reponer
@@ -670,7 +670,7 @@ export default function GestionInventario() {
                 <button
                   type="submit"
                   disabled={guardandoReposicion}
-                  className="rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 disabled:opacity-50"
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 shadow-xs cursor-pointer transition-colors"
                 >
                   {guardandoReposicion ? "Ingresando lote..." : "Confirmar Reposición"}
                 </button>
@@ -756,7 +756,7 @@ export default function GestionInventario() {
                 <button
                   type="submit"
                   disabled={guardandoUmbral}
-                  className="rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 disabled:opacity-50"
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 shadow-xs cursor-pointer transition-colors"
                 >
                   {guardandoUmbral ? "Guardando..." : "Guardar Umbral"}
                 </button>

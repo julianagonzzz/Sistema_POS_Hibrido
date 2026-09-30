@@ -227,7 +227,7 @@ export default function GestionProductos() {
                 <button
                     type="button"
                     onClick={abrirCrear}
-                    className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800"
+                    className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 shadow-sm cursor-pointer transition-colors"
                 >
                     + Agregar producto
                 </button>
@@ -570,7 +570,7 @@ export default function GestionProductos() {
                                 <button
                                     type="submit"
                                     disabled={guardando}
-                                    className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 shadow-sm cursor-pointer transition-colors"
                                 >
                                     {guardando
                                         ? "Guardando..."

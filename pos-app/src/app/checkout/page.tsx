@@ -247,9 +247,16 @@ export default function CheckoutPage() {
       <div className="min-h-screen bg-slate-50 text-slate-800">
         <header className="bg-white border-b border-slate-200">
           <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-            <span className="font-extrabold text-slate-900 text-lg">
-              Híbrido<span className="text-indigo-600">POS</span>
-            </span>
+            <div className="flex items-center gap-2">
+              <img
+                src="/images/nexovolk-logo.png"
+                alt="NexoVolk"
+                className="w-8 h-8 rounded-lg object-contain shadow-xs"
+              />
+              <span className="font-black text-slate-900 text-lg">
+                Nexo<span className="text-orange-500">Volk</span>
+              </span>
+            </div>
             <span className="text-xs font-semibold px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full">
               Pedido Confirmado Online
             </span>
@@ -452,9 +459,16 @@ export default function CheckoutPage() {
           <Link href="/carrito" className="text-sm font-medium text-slate-600 hover:text-slate-900">
             ← Volver al carrito
           </Link>
-          <span className="font-extrabold text-slate-900">
-            Híbrido<span className="text-indigo-600">POS</span> · Checkout Online
-          </span>
+          <div className="flex items-center gap-2.5">
+            <img
+              src="/images/nexovolk-logo.png"
+              alt="NexoVolk"
+              className="w-8 h-8 rounded-lg object-contain shadow-xs"
+            />
+            <span className="font-black text-slate-900">
+              Nexo<span className="text-orange-500">Volk</span> · Checkout Online
+            </span>
+          </div>
           <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
             🔒 Checkout Seguro
           </span>
@@ -795,7 +809,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Titular:</span>
-                      <strong className="text-slate-800">POS Híbrido S.A.S.</strong>
+                      <strong className="text-slate-800">NexoVolk S.A.S.</strong>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">NIT:</span>
