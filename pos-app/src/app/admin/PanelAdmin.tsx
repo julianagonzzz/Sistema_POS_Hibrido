@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import GestionInventario from "./inventario/GestionInventario";
 import GestionProductos from "./productos/GestionProductos";
+import Link from "next/link";
 
 // Mismo tipo que expone lib/administracion.ts en el servidor;
 // se repite aquí porque este archivo corre en el navegador.
@@ -177,6 +178,14 @@ export default function PanelAdmin({ nombreAdmin }: { nombreAdmin: string }) {
                     >
                         <span>🛍️ Productos</span>
                     </button>
+
+                    {/* Enlace al Reporte de Ventas */}
+                    <Link
+                        href="/admin/reportes"
+                        className="ml-auto rounded-xl px-4 py-2 text-sm font-semibold transition-all flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-500/20"
+                    >
+                        <span>📊 Reporte de Ventas</span>
+                    </Link>
                 </nav>
 
                 {seccionActiva === "inventario" ? (
