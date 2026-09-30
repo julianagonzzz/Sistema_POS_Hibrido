@@ -129,7 +129,13 @@ export default function PanelAdmin({ nombreAdmin }: { nombreAdmin: string }) {
         <main className="flex-1 bg-zinc-50 px-6 py-10">
             <div className="mx-auto max-w-5xl space-y-8">
                 <header>
-                    <h1 className="text-2xl font-semibold text-zinc-900">Panel de administrador</h1>
+                    <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 border border-blue-200">
+                            KATRONIX POS
+                        </span>
+                        <span className="text-xs text-zinc-400">Control Central de Operaciones</span>
+                    </div>
+                    <h1 className="text-2xl font-bold text-zinc-900">Panel de Administración</h1>
                     <p className="mt-1 text-sm text-zinc-500">Sesión activa: {nombreAdmin}</p>
                 </header>
 

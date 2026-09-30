@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { Producto } from "@/lib/productos";
 import { useCarrito } from "@/app/carrito/CarritoContext";
+import { ProductImage } from "@/components/ProductImage";
 
 interface Props {
   productosIniciales: Producto[];
@@ -18,11 +19,13 @@ function formatearPrecio(valor: number): string {
 }
 
 const ICONOS_CATEGORIA: Record<string, string> = {
-  "Todos": "🛍️",
-  "Electrodomésticos": "🔌",
-  "Aseo Personal": "🧼",
-  "Alimentos": "🍎",
-  "Moda": "👕",
+  "Todos": "⚡",
+  "Celulares": "📱",
+  "Computadores": "💻",
+  "Televisores": "📺",
+  "Videojuegos": "🎮",
+  "Accesorios": "⌨️",
+  "Electrodomésticos": "🍳",
 };
 
 export default function CatalogoCliente({ productosIniciales, categorias }: Props) {
@@ -110,7 +113,7 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
                 onClick={() => setCategoriaSeleccionada(cat)}
                 className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   activa
-                    ? "bg-indigo-600 text-white shadow-xs"
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                     : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                 }`}
               >
@@ -147,11 +150,16 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
               key={prod.id_producto}
               className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition-shadow flex flex-col group"
             >
-              {/* Imagen / Emoji */}
-              <div className="h-44 bg-slate-100 flex items-center justify-center text-5xl relative select-none group-hover:scale-105 transition-transform duration-300">
-                {prod.imagen_url || "🛍️"}
+              {/* Imagen / Producto */}
+              <div className="h-48 bg-white flex items-center justify-center relative select-none p-3 border-b border-slate-100 overflow-hidden">
+                <ProductImage
+                  src={prod.imagen_url}
+                  alt={prod.nombre}
+                  className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                  fallbackEmoji="⚡"
+                />
                 <span
-                  className={`absolute top-3 right-3 text-xs font-semibold px-2 py-0.5 rounded-full border ${
+                  className={`absolute top-3 right-3 text-xs font-semibold px-2 py-0.5 rounded-full border backdrop-blur-xs ${
                     prod.cantidad_stock > 0
                       ? "bg-emerald-100 text-emerald-800 border-emerald-200"
                       : "bg-rose-100 text-rose-800 border-rose-200"
@@ -160,9 +168,9 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
                   {prod.cantidad_stock > 0 ? `Stock: ${prod.cantidad_stock}` : "Agotado"}
                 </span>
                 {(prod.talla || prod.genero) && (
-                  <span className="absolute bottom-3 left-3 text-[11px] font-medium px-2 py-0.5 bg-white/90 text-slate-600 rounded-md backdrop-blur-xs shadow-xs">
-                    {prod.talla && prod.talla !== "Única" ? `${prod.talla} • ` : ""}
-                    {prod.genero}
+                  <span className="absolute bottom-3 left-3 text-[10px] font-semibold px-2 py-0.5 bg-slate-900/80 text-white rounded-md backdrop-blur-xs shadow-xs">
+                    {prod.genero && prod.genero !== "Unisex" ? `${prod.genero} • ` : ""}
+                    {prod.talla && prod.talla !== "Única" ? prod.talla : "Tech"}
                   </span>
                 )}
               </div>
@@ -170,7 +178,7 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
               {/* Detalle */}
               <div className="p-5 flex flex-col flex-1">
                 <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                  <span className="font-bold uppercase tracking-wider text-indigo-600 text-[10px]">
+                  <span className="font-bold uppercase tracking-wider text-blue-600 text-[10px]">
                     {prod.categoria}
                   </span>
                   {prod.codigo_barras && (
@@ -193,16 +201,16 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">
                       Precio
                     </span>
-                    <span className="text-base font-extrabold text-slate-900">
+                    <span className="text-base font-black text-orange-600">
                       {formatearPrecio(prod.precio)}
                     </span>
                   </div>
 
-                                    <button
+                  <button
                     type="button"
                     onClick={() => agregarAlCarrito(prod)}
                     disabled={prod.cantidad_stock <= 0}
-                    className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors cursor-pointer disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed"
+                    className="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors cursor-pointer disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed shadow-xs"
                   >
                     {prod.cantidad_stock <= 0
                       ? "Agotado"

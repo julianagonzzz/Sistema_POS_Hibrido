@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ProductImage } from "@/components/ProductImage";
 
 type Producto = {
     id_producto: number;
@@ -268,9 +269,14 @@ export default function GestionProductos() {
                                 >
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-3">
-                                            <span className="text-2xl">
-                                                {producto.imagen_url || "📦"}
-                                            </span>
+                                            <div className="w-10 h-10 rounded-lg bg-zinc-50 border border-zinc-200 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                                                <ProductImage
+                                                    src={producto.imagen_url}
+                                                    alt={producto.nombre}
+                                                    className="w-full h-full object-contain p-1"
+                                                    fallbackEmoji="⚡"
+                                                />
+                                            </div>
 
                                             <div>
                                                 <p className="font-medium text-zinc-900">
@@ -469,65 +475,81 @@ export default function GestionProductos() {
 
                             <div>
                                 <label className="text-sm font-medium text-zinc-700">
-                                    Género
+                                    Marca / Fabricante
                                 </label>
 
                                 <input
                                     value={formulario.genero}
+                                    placeholder="Apple, Samsung, HP, Sony..."
                                     onChange={(e) =>
                                         actualizarCampo("genero", e.target.value)
                                     }
-                                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
                                 />
                             </div>
 
                             <div>
                                 <label className="text-sm font-medium text-zinc-700">
-                                    Talla
+                                    Especificación / Capacidad
                                 </label>
 
                                 <input
                                     value={formulario.talla}
+                                    placeholder="256 GB, 15.6'' IA, 65'' 4K..."
                                     onChange={(e) =>
                                         actualizarCampo("talla", e.target.value)
                                     }
-                                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
                                 />
                             </div>
 
-                            <div>
+                            <div className="sm:col-span-2">
                                 <label className="text-sm font-medium text-zinc-700">
                                     Código de barras
                                 </label>
 
                                 <input
                                     value={formulario.codigo_barras}
+                                    placeholder="Ej: 7701001001"
                                     onChange={(e) =>
                                         actualizarCampo(
                                             "codigo_barras",
                                             e.target.value
                                         )
                                     }
-                                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
                                 />
                             </div>
 
-                            <div>
+                            <div className="sm:col-span-2">
                                 <label className="text-sm font-medium text-zinc-700">
-                                    Imagen / emoji
+                                    Imagen del Producto (Ruta local / URL / Emoji)
                                 </label>
 
-                                <input
-                                    value={formulario.imagen_url}
-                                    onChange={(e) =>
-                                        actualizarCampo(
-                                            "imagen_url",
-                                            e.target.value
-                                        )
-                                    }
-                                    placeholder="🍳"
-                                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
-                                />
+                                <div className="mt-1 flex items-center gap-3">
+                                    <input
+                                        value={formulario.imagen_url}
+                                        onChange={(e) =>
+                                            actualizarCampo(
+                                                "imagen_url",
+                                                e.target.value
+                                            )
+                                        }
+                                        placeholder="/images/productos/... o https://... o 📱"
+                                        className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+                                    />
+                                    <div className="w-11 h-11 rounded-lg bg-zinc-50 border border-zinc-200 flex items-center justify-center overflow-hidden shrink-0 shadow-xs" title="Vista previa de imagen">
+                                        <ProductImage
+                                            src={formulario.imagen_url}
+                                            alt="Vista previa"
+                                            className="w-full h-full object-contain p-1"
+                                            fallbackEmoji="⚡"
+                                        />
+                                    </div>
+                                </div>
+                                <p className="text-[11px] text-zinc-500 mt-1">
+                                    Rutas locales soportadas (ej: <code className="text-blue-600 font-mono">/images/productos/iphone-16-pro-max-azul.png</code>), enlaces HTTPS o emojis.
+                                </p>
                             </div>
 
                             {error && (

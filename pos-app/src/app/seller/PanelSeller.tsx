@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { VendedorInfo, ClienteRegistrado } from "@/lib/vendedores";
 import { Producto } from "@/lib/productos";
 import { MedioPago, VentaCompleta, ResumenVentaFila } from "@/lib/ventas";
+import { ProductImage } from "@/components/ProductImage";
 
 interface Props {
   vendedor: VendedorInfo;
@@ -329,14 +330,14 @@ export default function PanelSeller({
       <header className="sticky top-0 z-40 bg-slate-900 text-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 font-bold flex items-center justify-center text-lg shadow-xs">
-              POS
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-white font-bold flex items-center justify-center text-lg shadow-xs">
+              K
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base tracking-tight">HíbridoPOS</span>
-                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  Panel Vendedor
+                <span className="font-extrabold text-base tracking-tight">KATRONIX<span className="text-orange-500">POS</span></span>
+                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  Terminal Vendedor
                 </span>
               </div>
               <p className="text-xs text-slate-400">
@@ -467,7 +468,14 @@ export default function PanelSeller({
                     >
                       <div>
                         <div className="flex items-start justify-between gap-2">
-                          <span className="text-3xl">{prod.imagen_url || "🛍️"}</span>
+                          <div className="w-12 h-12 rounded-lg bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                            <ProductImage
+                              src={prod.imagen_url}
+                              alt={prod.nombre}
+                              className="w-full h-full object-contain p-1"
+                              fallbackEmoji="⚡"
+                            />
+                          </div>
                           <span
                             className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                               agotado

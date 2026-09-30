@@ -30,30 +30,30 @@ export default async function CatalogoPage() {
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
 
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md group-hover:bg-indigo-700 transition-colors">
-              H
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-white flex items-center justify-center font-extrabold text-2xl shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform">
+              K
             </div>
 
             <div>
-              <span className="text-xl font-extrabold tracking-tight text-slate-900">
-                Híbrido<span className="text-indigo-600">POS</span>
-              </span>
-
-              <span className="hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
-                Catálogo
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xl font-black tracking-tight text-slate-900">
+                  KATRONIX<span className="text-orange-500">POS</span>
+                </span>
+                <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full border border-blue-200">
+                  Catálogo Oficial
+                </span>
+              </div>
             </div>
           </Link>
 
           <div className="flex items-center gap-3">
-
             <BotonCarrito />
 
             {/* Mi cuenta */}
             <Link
               href="/cliente"
-              className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors"
+              className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
             >
               👤 Mi cuenta
             </Link>

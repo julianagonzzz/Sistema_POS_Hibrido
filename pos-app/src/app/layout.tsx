@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sistema POS Híbrido",
-  description: "Sistema POS Híbrido",
+  title: "Katronix POS - Pasión por la Tecnología",
+  description: "Sistema POS y Tienda Omnicanal de Electrónica, Computadores, Televisores, Gaming y Electrohogar",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
