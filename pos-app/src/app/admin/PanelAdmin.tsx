@@ -179,12 +179,12 @@ export default function PanelAdmin({ nombreAdmin }: { nombreAdmin: string }) {
                         <span>🛍️ Productos</span>
                     </button>
 
-                    {/* Enlace al Reporte de Ventas */}
+                    {/* Enlace al Reporte Diario */}
                     <Link
                         href="/admin/reportes"
                         className="ml-auto rounded-xl px-4 py-2 text-sm font-semibold transition-all flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-500/20"
                     >
-                        <span>📊 Reporte de Ventas</span>
+                        <span>📊 Reporte Diario</span>
                     </Link>
                 </nav>
 

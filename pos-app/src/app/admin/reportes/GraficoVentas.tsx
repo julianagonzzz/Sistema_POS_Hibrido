@@ -2,7 +2,6 @@
 "use client";
 
 import {
-    BarChart,
     Bar,
     XAxis,
     YAxis,
@@ -13,16 +12,10 @@ import {
     Line,
     ComposedChart,
 } from "recharts";
+import type { ResumenVentasHora } from "@/lib/reportes";
 
 type GraficoVentasProps = {
-    datos: Array<{
-        fecha: string;
-        total_fisico: number;
-        total_online: number;
-        volumen_fisico: number;
-        volumen_online: number;
-        total_general: number;
-    }>;
+    datos: ResumenVentasHora[];
 };
 
 export default function GraficoVentas({ datos }: GraficoVentasProps) {
@@ -35,37 +28,37 @@ export default function GraficoVentas({ datos }: GraficoVentasProps) {
 
     if (!datos || datos.length === 0) {
         return (
-            <div className="w-full h-80 bg-white p-8 rounded-2xl border border-zinc-200 shadow-xs flex flex-col items-center justify-center text-center">
-                <span className="text-4xl mb-3">📊</span>
-                <p className="font-semibold text-zinc-800">Aún no hay transacciones para graficar</p>
-                <p className="text-sm text-zinc-500 mt-1">
-                    Las ventas registradas en POS y tienda online aparecerán aquí organizadas por día.
+            <div className="w-full h-72 bg-white p-8 rounded-2xl border border-zinc-200 shadow-xs flex flex-col items-center justify-center text-center">
+                <span className="text-4xl mb-3">🕒</span>
+                <p className="font-bold text-zinc-800">Sin transacciones registradas hoy</p>
+                <p className="text-sm text-zinc-500 mt-1 max-w-md">
+                    En cuanto se procesen ventas en caja física o en la tienda online, verás la curva de actividad horaria aquí.
                 </p>
             </div>
         );
     }
 
     return (
-        <div className="w-full h-[460px] bg-white p-6 rounded-2xl border border-zinc-200 shadow-xs">
+        <div className="w-full h-[450px] bg-white p-6 rounded-2xl border border-zinc-200 shadow-xs">
             <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                    <h2 className="text-lg font-bold text-zinc-900">
-                        Tendencia de Ingresos y Volumen
-                    </h2>
+                    <h3 className="text-lg font-bold text-zinc-900">
+                        Comportamiento de Ventas por Hora
+                    </h3>
                     <p className="text-xs text-zinc-500 mt-0.5">
-                        Barras: Ingresos COP (Eje izquierdo) · Líneas: Cantidad de transacciones (Eje derecho)
+                        Barras: Facturación en COP (Eje izq.) · Líneas: Cantidad de tickets/pedidos (Eje der.)
                     </p>
                 </div>
             </div>
 
-            <ResponsiveContainer width="100%" height={360}>
+            <ResponsiveContainer width="100%" height={340}>
                 <ComposedChart
                     data={datos}
-                    margin={{ top: 20, right: 20, left: 10, bottom: 5 }}
+                    margin={{ top: 15, right: 15, left: 10, bottom: 5 }}
                 >
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f4f4f5" />
                     <XAxis
-                        dataKey="fecha"
+                        dataKey="hora"
                         tick={{ fontSize: 11, fill: "#71717a" }}
                         axisLine={{ stroke: "#e4e4e7" }}
                         tickLine={false}
@@ -93,18 +86,18 @@ export default function GraficoVentas({ datos }: GraficoVentasProps) {
                             padding: "10px 14px",
                         }}
                         formatter={(value: any, name: any) => {
-                            if (typeof name === "string" && name.includes("Volumen")) {
+                            if (typeof name === "string" && (name.includes("Tickets") || name.includes("Pedidos") || name.includes("Volumen"))) {
                                 return [Number(value || 0).toLocaleString("es-CO"), name];
                             }
                             return [formatoMoneda(Number(value || 0)), name];
                         }}
                         labelStyle={{ color: "#18181b", fontWeight: "bold", marginBottom: "6px" }}
                     />
-                    <Legend wrapperStyle={{ paddingTop: "16px", fontSize: "12px" }} />
+                    <Legend wrapperStyle={{ paddingTop: "14px", fontSize: "12px" }} />
                     <Bar
                         yAxisId="izquierda"
                         dataKey="total_fisico"
-                        name="Ingresos Físicos (POS)"
+                        name="Ingresos POS (Físico)"
                         stackId="a"
                         fill="#2563eb" /* NexoVolk Blue */
                         radius={[0, 0, 4, 4]}
@@ -121,7 +114,7 @@ export default function GraficoVentas({ datos }: GraficoVentasProps) {
                         yAxisId="derecha"
                         type="monotone"
                         dataKey="volumen_fisico"
-                        name="Volumen Físico (Tx)"
+                        name="Tickets POS"
                         stroke="#1d4ed8" /* NexoVolk Dark Blue */
                         strokeWidth={2.5}
                         dot={{ r: 3, fill: "#1d4ed8" }}
@@ -131,7 +124,7 @@ export default function GraficoVentas({ datos }: GraficoVentasProps) {
                         yAxisId="derecha"
                         type="monotone"
                         dataKey="volumen_online"
-                        name="Volumen Online (Tx)"
+                        name="Pedidos Online"
                         stroke="#c2410c" /* NexoVolk Dark Orange */
                         strokeWidth={2.5}
                         dot={{ r: 3, fill: "#c2410c" }}
