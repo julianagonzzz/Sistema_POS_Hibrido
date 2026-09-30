@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { Producto } from "@/lib/productos";
 import { useCarrito } from "@/app/carrito/CarritoContext";
+import { ProductImage } from "@/components/ProductImage";
 
 interface Props {
   productosIniciales: Producto[];
@@ -17,13 +18,7 @@ function formatearPrecio(valor: number): string {
   }).format(valor);
 }
 
-const ICONOS_CATEGORIA: Record<string, string> = {
-  "Todos": "🛍️",
-  "Electrodomésticos": "🔌",
-  "Aseo Personal": "🧼",
-  "Alimentos": "🍎",
-  "Moda": "👕",
-};
+
 
 export default function CatalogoCliente({ productosIniciales, categorias }: Props) {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>("Todos");
@@ -72,8 +67,10 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
         <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
           {/* Buscador de texto */}
           <div className="relative flex-1 max-w-md">
-            <span className="absolute inset-y-0 left-3 flex items-center text-slate-400 select-none">
-              🔍
+            <span className="absolute inset-y-0 left-3 flex items-center text-slate-400 select-none pointer-events-none">
+              <svg className="w-4 h-4 stroke-[2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
             </span>
             <input
               type="text"
@@ -101,21 +98,19 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
         {/* Pestañas / Botones de Categorías */}
         <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
           {todasLasCategorias.map((cat) => {
-            const icono = ICONOS_CATEGORIA[cat] || "🏷️";
             const activa = categoriaSeleccionada === cat;
             return (
               <button
                 key={cat}
                 type="button"
                 onClick={() => setCategoriaSeleccionada(cat)}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   activa
-                    ? "bg-indigo-600 text-white shadow-xs"
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                     : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                 }`}
               >
-                <span>{icono}</span>
-                <span>{cat}</span>
+                {cat}
               </button>
             );
           })}
@@ -125,8 +120,12 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
       {/* Grid de Productos */}
       {productosFiltrados.length === 0 ? (
         <div className="p-12 text-center bg-white rounded-2xl border border-slate-200">
-          <span className="text-4xl">🔍</span>
-          <h3 className="text-lg font-bold text-slate-800 mt-2">No se encontraron productos</h3>
+          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+            <svg className="w-6 h-6 stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-bold text-slate-800 mt-3">No se encontraron productos</h3>
           <p className="text-sm text-slate-500 mt-1">
             Intenta con otro término de búsqueda o selecciona otra categoría.
           </p>
@@ -147,11 +146,16 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
               key={prod.id_producto}
               className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition-shadow flex flex-col group"
             >
-              {/* Imagen / Emoji */}
-              <div className="h-44 bg-slate-100 flex items-center justify-center text-5xl relative select-none group-hover:scale-105 transition-transform duration-300">
-                {prod.imagen_url || "🛍️"}
+              {/* Imagen / Producto */}
+              <div className="h-48 bg-white flex items-center justify-center relative select-none p-3 border-b border-slate-100 overflow-hidden">
+                <ProductImage
+                  src={prod.imagen_url}
+                  alt={prod.nombre}
+                  className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                  fallbackEmoji="⚡"
+                />
                 <span
-                  className={`absolute top-3 right-3 text-xs font-semibold px-2 py-0.5 rounded-full border ${
+                  className={`absolute top-3 right-3 text-xs font-semibold px-2 py-0.5 rounded-full border backdrop-blur-xs ${
                     prod.cantidad_stock > 0
                       ? "bg-emerald-100 text-emerald-800 border-emerald-200"
                       : "bg-rose-100 text-rose-800 border-rose-200"
@@ -160,9 +164,9 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
                   {prod.cantidad_stock > 0 ? `Stock: ${prod.cantidad_stock}` : "Agotado"}
                 </span>
                 {(prod.talla || prod.genero) && (
-                  <span className="absolute bottom-3 left-3 text-[11px] font-medium px-2 py-0.5 bg-white/90 text-slate-600 rounded-md backdrop-blur-xs shadow-xs">
-                    {prod.talla && prod.talla !== "Única" ? `${prod.talla} • ` : ""}
-                    {prod.genero}
+                  <span className="absolute bottom-3 left-3 text-[10px] font-bold px-2 py-0.5 bg-white/95 text-slate-700 rounded-md backdrop-blur-xs border border-slate-200 shadow-xs">
+                    {prod.genero && prod.genero !== "Unisex" ? `${prod.genero} • ` : ""}
+                    {prod.talla && prod.talla !== "Única" ? prod.talla : "Tech"}
                   </span>
                 )}
               </div>
@@ -170,7 +174,7 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
               {/* Detalle */}
               <div className="p-5 flex flex-col flex-1">
                 <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                  <span className="font-bold uppercase tracking-wider text-indigo-600 text-[10px]">
+                  <span className="font-bold uppercase tracking-wider text-blue-600 text-[10px]">
                     {prod.categoria}
                   </span>
                   {prod.codigo_barras && (
@@ -193,16 +197,16 @@ export default function CatalogoCliente({ productosIniciales, categorias }: Prop
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">
                       Precio
                     </span>
-                    <span className="text-base font-extrabold text-slate-900">
+                    <span className="text-base font-black text-orange-600">
                       {formatearPrecio(prod.precio)}
                     </span>
                   </div>
 
-                                    <button
+                  <button
                     type="button"
                     onClick={() => agregarAlCarrito(prod)}
                     disabled={prod.cantidad_stock <= 0}
-                    className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors cursor-pointer disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed"
+                    className="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors cursor-pointer disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed shadow-xs"
                   >
                     {prod.cantidad_stock <= 0
                       ? "Agotado"

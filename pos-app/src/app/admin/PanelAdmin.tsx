@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import GestionInventario from "./inventario/GestionInventario";
+import GestionProductos from "./productos/GestionProductos";
 
 // Mismo tipo que expone lib/administracion.ts en el servidor;
 // se repite aquí porque este archivo corre en el navegador.
@@ -35,7 +36,10 @@ const FORMULARIO_VACIO: FormularioVendedor = {
 };
 
 export default function PanelAdmin({ nombreAdmin }: { nombreAdmin: string }) {
-    const [seccionActiva, setSeccionActiva] = useState<"vendedores" | "inventario">("vendedores");
+    const [seccionActiva, setSeccionActiva] =
+        useState<"vendedores" | "inventario" | "productos">(
+            "vendedores"
+        );
     const [vendedores, setVendedores] = useState<Vendedor[]>([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -124,9 +128,21 @@ export default function PanelAdmin({ nombreAdmin }: { nombreAdmin: string }) {
     return (
         <main className="flex-1 bg-zinc-50 px-6 py-10">
             <div className="mx-auto max-w-5xl space-y-8">
-                <header>
-                    <h1 className="text-2xl font-semibold text-zinc-900">Panel de administrador</h1>
-                    <p className="mt-1 text-sm text-zinc-500">Sesión activa: {nombreAdmin}</p>
+                <header className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <img
+                            src="/images/nexovolk-logo.png"
+                            alt="NexoVolk"
+                            className="w-10 h-10 rounded-xl object-contain shadow-xs"
+                        />
+                        <div>
+                            <h1 className="text-2xl font-black text-zinc-900 tracking-tight">
+                                Nexo<span className="text-orange-500">Volk</span>
+                                <span className="ml-2 text-sm font-semibold text-zinc-600">· Administración</span>
+                            </h1>
+                            <p className="text-xs text-zinc-500">Sesión activa: {nombreAdmin}</p>
+                        </div>
+                    </div>
                 </header>
 
                 {/* Selector de módulos del Administrador */}
@@ -134,157 +150,167 @@ export default function PanelAdmin({ nombreAdmin }: { nombreAdmin: string }) {
                     <button
                         type="button"
                         onClick={() => setSeccionActiva("vendedores")}
-                        className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                            seccionActiva === "vendedores"
-                                ? "bg-zinc-900 text-white shadow-sm"
-                                : "bg-white text-zinc-600 hover:text-zinc-900 border border-zinc-200"
-                        }`}
+                        className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${seccionActiva === "vendedores"
+                            ? "bg-blue-600 text-white shadow-sm shadow-blue-500/20"
+                            : "bg-white text-zinc-600 hover:text-zinc-900 border border-zinc-200"
+                            }`}
                     >
                         👥 Vendedores y Cajas
                     </button>
                     <button
                         type="button"
                         onClick={() => setSeccionActiva("inventario")}
-                        className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all flex items-center gap-2 ${
-                            seccionActiva === "inventario"
-                                ? "bg-zinc-900 text-white shadow-sm"
-                                : "bg-white text-zinc-600 hover:text-zinc-900 border border-zinc-200"
-                        }`}
+                        className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all flex items-center gap-2 ${seccionActiva === "inventario"
+                            ? "bg-blue-600 text-white shadow-sm shadow-blue-500/20"
+                            : "bg-white text-zinc-600 hover:text-zinc-900 border border-zinc-200"
+                            }`}
                     >
                         <span>📦 Inventario y Reposición</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setSeccionActiva("productos")}
+                        className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all flex items-center gap-2 ${seccionActiva === "productos"
+                            ? "bg-blue-600 text-white shadow-sm shadow-blue-500/20"
+                            : "bg-white text-zinc-600 hover:text-zinc-900 border border-zinc-200"
+                            }`}
+                    >
+                        <span>🛍️ Productos</span>
                     </button>
                 </nav>
 
                 {seccionActiva === "inventario" ? (
                     <GestionInventario />
+                ) : seccionActiva === "productos" ? (
+                    <GestionProductos />
                 ) : (
                     <>
                         {/* Formulario: crear vendedor */}
-                <section className="rounded-2xl border border-zinc-200 bg-white p-6">
-                    <h2 className="text-lg font-medium text-zinc-900">Crear vendedor</h2>
-                    <p className="mt-1 text-sm text-zinc-500">
-                        El código de caja representa el punto de venta asignado a este vendedor.
-                    </p>
-
-                    <form onSubmit={manejarCreacion} className="mt-4 grid gap-4 sm:grid-cols-2">
-                        <Campo
-                            etiqueta="Nombre"
-                            id="nombre"
-                            value={formulario.nombre}
-                            onChange={(v) => actualizarCampo("nombre", v)}
-                            required
-                        />
-                        <Campo
-                            etiqueta="Correo"
-                            id="correo"
-                            type="email"
-                            value={formulario.correo}
-                            onChange={(v) => actualizarCampo("correo", v)}
-                            required
-                        />
-                        <Campo
-                            etiqueta="Cédula"
-                            id="cedula"
-                            value={formulario.cedula}
-                            onChange={(v) => actualizarCampo("cedula", v)}
-                            required
-                        />
-                        <Campo
-                            etiqueta="Contraseña temporal"
-                            id="contrasena"
-                            type="password"
-                            value={formulario.contrasena}
-                            onChange={(v) => actualizarCampo("contrasena", v)}
-                            required
-                        />
-                        <Campo
-                            etiqueta="Código de caja (punto de venta)"
-                            id="codigo_caja"
-                            value={formulario.codigo_caja}
-                            onChange={(v) => actualizarCampo("codigo_caja", v)}
-                        />
-                        <Campo
-                            etiqueta="Turno"
-                            id="turno"
-                            value={formulario.turno}
-                            onChange={(v) => actualizarCampo("turno", v)}
-                        />
-
-                        {errorFormulario && (
-                            <p className="sm:col-span-2 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
-                                {errorFormulario}
+                        <section className="rounded-2xl border border-zinc-200 bg-white p-6">
+                            <h2 className="text-lg font-medium text-zinc-900">Crear vendedor</h2>
+                            <p className="mt-1 text-sm text-zinc-500">
+                                El código de caja representa el punto de venta asignado a este vendedor.
                             </p>
-                        )}
 
-                        <button
-                            type="submit"
-                            disabled={enviando}
-                            className="sm:col-span-2 rounded-lg bg-zinc-900 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
-                        >
-                            {enviando ? "Creando..." : "Crear vendedor"}
-                        </button>
-                    </form>
-                </section>
+                            <form onSubmit={manejarCreacion} className="mt-4 grid gap-4 sm:grid-cols-2">
+                                <Campo
+                                    etiqueta="Nombre"
+                                    id="nombre"
+                                    value={formulario.nombre}
+                                    onChange={(v) => actualizarCampo("nombre", v)}
+                                    required
+                                />
+                                <Campo
+                                    etiqueta="Correo"
+                                    id="correo"
+                                    type="email"
+                                    value={formulario.correo}
+                                    onChange={(v) => actualizarCampo("correo", v)}
+                                    required
+                                />
+                                <Campo
+                                    etiqueta="Cédula"
+                                    id="cedula"
+                                    value={formulario.cedula}
+                                    onChange={(v) => actualizarCampo("cedula", v)}
+                                    required
+                                />
+                                <Campo
+                                    etiqueta="Contraseña temporal"
+                                    id="contrasena"
+                                    type="password"
+                                    value={formulario.contrasena}
+                                    onChange={(v) => actualizarCampo("contrasena", v)}
+                                    required
+                                />
+                                <Campo
+                                    etiqueta="Código de caja (punto de venta)"
+                                    id="codigo_caja"
+                                    value={formulario.codigo_caja}
+                                    onChange={(v) => actualizarCampo("codigo_caja", v)}
+                                />
+                                <Campo
+                                    etiqueta="Turno"
+                                    id="turno"
+                                    value={formulario.turno}
+                                    onChange={(v) => actualizarCampo("turno", v)}
+                                />
 
-                {/* Tabla: vendedores registrados */}
-                <section className="rounded-2xl border border-zinc-200 bg-white p-6">
-                    <h2 className="text-lg font-medium text-zinc-900">Vendedores registrados</h2>
+                                {errorFormulario && (
+                                    <p className="sm:col-span-2 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
+                                        {errorFormulario}
+                                    </p>
+                                )}
 
-                    {error && (
-                        <p className="mt-3 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
-                            {error}
-                        </p>
-                    )}
+                                <button
+                                    type="submit"
+                                    disabled={enviando}
+                                    className="sm:col-span-2 rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 shadow-xs cursor-pointer transition-colors"
+                                >
+                                    {enviando ? "Creando..." : "Crear vendedor"}
+                                </button>
+                            </form>
+                        </section>
 
-                    {cargando ? (
-                        <p className="mt-4 text-sm text-zinc-500">Cargando...</p>
-                    ) : vendedores.length === 0 ? (
-                        <p className="mt-4 text-sm text-zinc-500">No hay vendedores registrados todavía.</p>
-                    ) : (
-                        <div className="mt-4 overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="border-b border-zinc-200 text-left text-zinc-500">
-                                        <th className="py-2 pr-4">Nombre</th>
-                                        <th className="py-2 pr-4">Correo</th>
-                                        <th className="py-2 pr-4">Punto de venta</th>
-                                        <th className="py-2 pr-4">Turno</th>
-                                        <th className="py-2 pr-4">Estado</th>
-                                        <th className="py-2 pr-4"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {vendedores.map((vendedor) => (
-                                        <tr key={vendedor.id_usuario} className="border-b border-zinc-100">
-                                            <td className="py-2 pr-4 text-zinc-900">{vendedor.nombre}</td>
-                                            <td className="py-2 pr-4 text-zinc-600">{vendedor.correo}</td>
-                                            <td className="py-2 pr-4 text-zinc-600">{vendedor.codigo_caja ?? "—"}</td>
-                                            <td className="py-2 pr-4 text-zinc-600">{vendedor.turno ?? "—"}</td>
-                                            <td className="py-2 pr-4">
-                                                <span
-                                                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${vendedor.activo
-                                                            ? "bg-green-50 text-green-700"
-                                                            : "bg-zinc-100 text-zinc-500"
-                                                        }`}
-                                                >
-                                                    {vendedor.activo ? "Activo" : "Desactivado"}
-                                                </span>
-                                            </td>
-                                            <td className="py-2 pr-4 text-right">
-                                                <button
-                                                    onClick={() => alternarActivo(vendedor)}
-                                                    className="rounded-lg border border-zinc-300 px-3 py-1 text-xs text-zinc-700 hover:bg-zinc-50"
-                                                >
-                                                    {vendedor.activo ? "Desactivar" : "Reactivar"}
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </section>
+                        {/* Tabla: vendedores registrados */}
+                        <section className="rounded-2xl border border-zinc-200 bg-white p-6">
+                            <h2 className="text-lg font-medium text-zinc-900">Vendedores registrados</h2>
+
+                            {error && (
+                                <p className="mt-3 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
+                                    {error}
+                                </p>
+                            )}
+
+                            {cargando ? (
+                                <p className="mt-4 text-sm text-zinc-500">Cargando...</p>
+                            ) : vendedores.length === 0 ? (
+                                <p className="mt-4 text-sm text-zinc-500">No hay vendedores registrados todavía.</p>
+                            ) : (
+                                <div className="mt-4 overflow-x-auto">
+                                    <table className="w-full text-sm">
+                                        <thead>
+                                            <tr className="border-b border-zinc-200 text-left text-zinc-500">
+                                                <th className="py-2 pr-4">Nombre</th>
+                                                <th className="py-2 pr-4">Correo</th>
+                                                <th className="py-2 pr-4">Punto de venta</th>
+                                                <th className="py-2 pr-4">Turno</th>
+                                                <th className="py-2 pr-4">Estado</th>
+                                                <th className="py-2 pr-4"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {vendedores.map((vendedor) => (
+                                                <tr key={vendedor.id_usuario} className="border-b border-zinc-100">
+                                                    <td className="py-2 pr-4 text-zinc-900">{vendedor.nombre}</td>
+                                                    <td className="py-2 pr-4 text-zinc-600">{vendedor.correo}</td>
+                                                    <td className="py-2 pr-4 text-zinc-600">{vendedor.codigo_caja ?? "—"}</td>
+                                                    <td className="py-2 pr-4 text-zinc-600">{vendedor.turno ?? "—"}</td>
+                                                    <td className="py-2 pr-4">
+                                                        <span
+                                                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${vendedor.activo
+                                                                ? "bg-green-50 text-green-700"
+                                                                : "bg-zinc-100 text-zinc-500"
+                                                                }`}
+                                                        >
+                                                            {vendedor.activo ? "Activo" : "Desactivado"}
+                                                        </span>
+                                                    </td>
+                                                    <td className="py-2 pr-4 text-right">
+                                                        <button
+                                                            onClick={() => alternarActivo(vendedor)}
+                                                            className="rounded-lg border border-zinc-300 px-3 py-1 text-xs text-zinc-700 hover:bg-zinc-50"
+                                                        >
+                                                            {vendedor.activo ? "Desactivar" : "Reactivar"}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </section>
                     </>
                 )}
             </div>

@@ -5,6 +5,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCarrito } from "./CarritoContext";
+import { ProductImage } from "@/components/ProductImage";
 
 function formatearPrecio(valor: number): string {
   return new Intl.NumberFormat("es-CO", {
@@ -62,9 +63,16 @@ export default function CarritoPage() {
           <Link href="/catalogo" className="text-sm font-medium text-slate-600 hover:text-slate-900">
             ← Seguir comprando
           </Link>
-          <span className="font-extrabold text-slate-900">
-            Híbrido<span className="text-indigo-600">POS</span>
-          </span>
+          <Link href="/" className="flex items-center gap-2 group">
+            <img
+              src="/images/nexovolk-logo.png"
+              alt="NexoVolk"
+              className="w-8 h-8 rounded-lg object-contain shadow-xs group-hover:scale-105 transition-transform"
+            />
+            <span className="font-black text-slate-900">
+              Nexo<span className="text-orange-500">Volk</span>
+            </span>
+          </Link>
         </div>
       </header>
 
@@ -133,11 +141,16 @@ export default function CarritoPage() {
                   key={item.id_producto}
                   className="bg-white p-4 rounded-2xl border border-slate-200 flex gap-4 items-center"
                 >
-                  <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-3xl shrink-0">
-                    {item.imagen_url || "🛍️"}
+                  <div className="w-16 h-16 rounded-xl bg-white border border-slate-100 flex items-center justify-center p-1.5 overflow-hidden shrink-0 shadow-xs">
+                    <ProductImage
+                      src={item.imagen_url}
+                      alt={item.nombre}
+                      className="w-full h-full object-contain"
+                      fallbackEmoji="⚡"
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-bold uppercase text-indigo-600">{item.categoria}</p>
+                    <p className="text-[10px] font-bold uppercase text-blue-600">{item.categoria}</p>
                     <p className="font-bold text-slate-900 truncate">{item.nombre}</p>
                     <p className="text-xs text-slate-500">
                       {formatearPrecio(item.precio)} c/u · {item.stock_disponible} disponibles

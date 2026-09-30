@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sistema POS Híbrido",
-  description: "Sistema POS Híbrido",
+  title: "NexoVolk",
+  description: "NexoVolk - Sistema POS y Tienda de Tecnología, Electrónica y Electrodomésticos",
+  icons: {
+    icon: "/images/nexovolk-logo.png",
+    shortcut: "/images/nexovolk-logo.png",
+    apple: "/images/nexovolk-logo.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

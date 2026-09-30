@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { VendedorInfo, ClienteRegistrado } from "@/lib/vendedores";
 import { Producto } from "@/lib/productos";
 import { MedioPago, VentaCompleta, ResumenVentaFila } from "@/lib/ventas";
+import { ProductImage } from "@/components/ProductImage";
 
 interface Props {
   vendedor: VendedorInfo;
@@ -324,24 +325,28 @@ export default function PanelSeller({
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col text-slate-800">
-      {/* Barra de cabecera superior */}
-      <header className="sticky top-0 z-40 bg-slate-900 text-white shadow-md">
+    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-800">
+      {/* Barra de cabecera superior Blanca */}
+      <header className="sticky top-0 z-40 bg-white text-slate-800 border-b border-slate-200 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 font-bold flex items-center justify-center text-lg shadow-xs">
-              POS
-            </div>
+            <img
+              src="/images/nexovolk-logo.png"
+              alt="NexoVolk"
+              className="w-10 h-10 rounded-xl object-contain shadow-xs"
+            />
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base tracking-tight">HíbridoPOS</span>
-                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  Panel Vendedor
+                <span className="font-black text-xl tracking-tight text-slate-900">
+                  Nexo<span className="text-orange-500">Volk</span>
+                </span>
+                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                  Terminal Vendedor
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
-                Punto de Venta / Caja: <strong className="text-white">{vendedor.codigo_caja}</strong> • Turno:{" "}
-                <strong className="text-white">{vendedor.turno}</strong>
+              <p className="text-xs text-slate-500">
+                Punto de Venta / Caja: <strong className="text-slate-900">{vendedor.codigo_caja}</strong> • Turno:{" "}
+                <strong className="text-slate-900">{vendedor.turno}</strong>
               </p>
             </div>
           </div>
@@ -349,33 +354,33 @@ export default function PanelSeller({
           <div className="flex items-center gap-4">
             <div className="hidden sm:block text-right text-xs">
               <span className="text-slate-400 block">Vendedor en turno</span>
-              <span className="font-semibold text-white">{vendedor.nombre}</span>
+              <span className="font-semibold text-slate-800">{vendedor.nombre}</span>
             </div>
 
             <button
               onClick={cerrarSesion}
-              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-rose-900/60 text-slate-300 hover:text-rose-200 border border-slate-700 transition-colors cursor-pointer"
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 border border-slate-200 transition-colors cursor-pointer"
             >
               Cerrar Sesión
             </button>
           </div>
         </div>
 
-        {/* Pestañas de Navegación del Panel */}
-        <div className="bg-slate-800 border-t border-slate-700/60 px-4 sm:px-8">
+        {/* Pestañas de Navegación del Panel Blancas */}
+        <div className="bg-white border-t border-slate-200 px-4 sm:px-8">
           <div className="max-w-7xl mx-auto flex gap-2">
             <button
               onClick={() => setPestana("venta")}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
                 pestana === "venta"
-                  ? "border-emerald-400 text-emerald-400 bg-slate-900/40"
-                  : "border-transparent text-slate-400 hover:text-white"
+                  ? "border-blue-600 text-blue-600 bg-blue-50/50"
+                  : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
               }`}
             >
               <span>🛒</span>
               <span>Crear Venta / POS</span>
               {carrito.length > 0 && (
-                <span className="bg-emerald-500 text-slate-950 text-xs px-2 py-0.2 rounded-full font-extrabold">
+                <span className="bg-orange-500 text-white text-xs px-2 py-0.2 rounded-full font-extrabold shadow-xs">
                   {carrito.length}
                 </span>
               )}
@@ -385,8 +390,8 @@ export default function PanelSeller({
               onClick={() => setPestana("clientes")}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
                 pestana === "clientes"
-                  ? "border-emerald-400 text-emerald-400 bg-slate-900/40"
-                  : "border-transparent text-slate-400 hover:text-white"
+                  ? "border-blue-600 text-blue-600 bg-blue-50/50"
+                  : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
               }`}
             >
               <span>👤</span>
@@ -400,8 +405,8 @@ export default function PanelSeller({
               }}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
                 pestana === "historial"
-                  ? "border-emerald-400 text-emerald-400 bg-slate-900/40"
-                  : "border-transparent text-slate-400 hover:text-white"
+                  ? "border-blue-600 text-blue-600 bg-blue-50/50"
+                  : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
               }`}
             >
               <span>📜</span>
@@ -444,7 +449,7 @@ export default function PanelSeller({
                       onClick={() => setFiltroCategoria(cat)}
                       className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${
                         filtroCategoria === cat
-                          ? "bg-slate-900 text-white"
+                          ? "bg-blue-600 text-white shadow-xs"
                           : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                       }`}
                     >
@@ -467,7 +472,14 @@ export default function PanelSeller({
                     >
                       <div>
                         <div className="flex items-start justify-between gap-2">
-                          <span className="text-3xl">{prod.imagen_url || "🛍️"}</span>
+                          <div className="w-12 h-12 rounded-lg bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                            <ProductImage
+                              src={prod.imagen_url}
+                              alt={prod.nombre}
+                              className="w-full h-full object-contain p-1"
+                              fallbackEmoji="⚡"
+                            />
+                          </div>
                           <span
                             className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                               agotado
@@ -499,7 +511,7 @@ export default function PanelSeller({
                               ? "bg-slate-100 text-slate-400 cursor-not-allowed"
                               : enCarrito
                               ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                              : "bg-slate-900 text-white hover:bg-slate-800"
+                              : "bg-blue-600 text-white hover:bg-blue-700 shadow-xs"
                           }`}
                         >
                           {enCarrito ? `+ Añadir (${enCarrito.cantidad})` : "+ Agregar"}
@@ -664,7 +676,7 @@ export default function PanelSeller({
                         onClick={() => cambiarMedioPago(mp)}
                         className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                           medioPago === mp
-                            ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                            ? "bg-blue-600 text-white border-blue-600 shadow-sm"
                             : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                         }`}
                       >
@@ -924,7 +936,7 @@ export default function PanelSeller({
                 <button
                   type="submit"
                   disabled={registrandoCliente}
-                  className="w-full py-3 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-colors shadow-sm cursor-pointer"
+                  className="w-full py-3 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition-colors shadow-sm cursor-pointer"
                 >
                   {registrandoCliente ? "Guardando cliente..." : "+ Registrar Cliente"}
                 </button>
@@ -1086,7 +1098,7 @@ export default function PanelSeller({
             >
               {/* Encabezado del ticket */}
               <div className="text-center border-b border-dashed border-slate-300 pb-3 space-y-0.5">
-                <p className="font-extrabold text-sm tracking-wider uppercase">Sistema POS Híbrido</p>
+                <p className="font-extrabold text-sm tracking-wider uppercase">NexoVolk POS</p>
                 <p className="text-[10px] text-slate-500">Punto de Venta Oficial</p>
                 <div className="text-[10px] text-slate-600 pt-1 flex justify-between">
                   <span>Ticket: #{String(reciboVenta.id_venta).padStart(6, "0")}</span>
@@ -1189,7 +1201,7 @@ export default function PanelSeller({
               </button>
               <button
                 onClick={() => setReciboVenta(null)}
-                className="flex-1 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 cursor-pointer transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 cursor-pointer transition-colors shadow-xs"
               >
                 Nueva Venta
               </button>

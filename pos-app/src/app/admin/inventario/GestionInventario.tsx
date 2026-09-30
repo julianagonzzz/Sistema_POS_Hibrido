@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { ProductoInventario, ResumenInventario } from "@/lib/inventario";
+import { ProductImage } from "@/components/ProductImage";
 
 function formatearPrecio(valor: number): string {
   return new Intl.NumberFormat("es-CO", {
@@ -464,10 +465,15 @@ export default function GestionInventario() {
                     >
                       {/* Producto */}
                       <td className="py-3 pr-4">
-                        <div className="font-medium text-zinc-900 flex items-center gap-2">
-                          {prod.imagen_url && (
-                            <span className="text-lg">{prod.imagen_url}</span>
-                          )}
+                        <div className="font-medium text-zinc-900 flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-zinc-50 border border-zinc-200 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                            <ProductImage
+                              src={prod.imagen_url}
+                              alt={prod.nombre}
+                              className="w-full h-full object-contain p-0.5"
+                              fallbackEmoji="📦"
+                            />
+                          </div>
                           <span>{prod.nombre}</span>
                         </div>
                         <div className="text-xs text-zinc-400 font-mono">
@@ -549,7 +555,7 @@ export default function GestionInventario() {
                               ? "bg-red-600 text-white hover:bg-red-700 ring-2 ring-red-300 ring-offset-1"
                               : esCritico
                               ? "bg-amber-600 text-white hover:bg-amber-700"
-                              : "bg-zinc-900 text-white hover:bg-zinc-800"
+                              : "bg-blue-600 text-white hover:bg-blue-700"
                           }`}
                         >
                           + Reponer
@@ -664,7 +670,7 @@ export default function GestionInventario() {
                 <button
                   type="submit"
                   disabled={guardandoReposicion}
-                  className="rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 disabled:opacity-50"
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 shadow-xs cursor-pointer transition-colors"
                 >
                   {guardandoReposicion ? "Ingresando lote..." : "Confirmar Reposición"}
                 </button>
@@ -750,7 +756,7 @@ export default function GestionInventario() {
                 <button
                   type="submit"
                   disabled={guardandoUmbral}
-                  className="rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 disabled:opacity-50"
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 shadow-xs cursor-pointer transition-colors"
                 >
                   {guardandoUmbral ? "Guardando..." : "Guardar Umbral"}
                 </button>
