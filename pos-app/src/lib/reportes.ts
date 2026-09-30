@@ -77,14 +77,32 @@ export async function obtenerReporteDiario(fechaFiltro?: string): Promise<Report
         ORDER BY hora ASC
     `;
     const resHoras = await pool.query(queryHoras, [fechaISO]);
-    const por_hora: ResumenVentasHora[] = resHoras.rows.map((row) => ({
-        hora: row.hora,
-        total_fisico: parseFloat(row.total_fisico || "0"),
-        total_online: parseFloat(row.total_online || "0"),
-        volumen_fisico: parseInt(row.volumen_fisico || "0", 10),
-        volumen_online: parseInt(row.volumen_online || "0", 10),
-        total_general: parseFloat(row.total_general || "0"),
-    }));
+    const ventasPorHoraMap = new Map<string, ResumenVentasHora>();
+    for (const row of resHoras.rows) {
+        ventasPorHoraMap.set(row.hora, {
+            hora: row.hora,
+            total_fisico: parseFloat(row.total_fisico || "0"),
+            total_online: parseFloat(row.total_online || "0"),
+            volumen_fisico: parseInt(row.volumen_fisico || "0", 10),
+            volumen_online: parseInt(row.volumen_online || "0", 10),
+            total_general: parseFloat(row.total_general || "0"),
+        });
+    }
+
+    // Construir la curva de 24 horas (00:00 - 23:00) para un reporte horario continuo
+    const por_hora: ResumenVentasHora[] = [];
+    for (let h = 0; h < 24; h++) {
+        const horaKey = `${h.toString().padStart(2, "0")}:00`;
+        const dato = ventasPorHoraMap.get(horaKey) || {
+            hora: horaKey,
+            total_fisico: 0,
+            total_online: 0,
+            volumen_fisico: 0,
+            volumen_online: 0,
+            total_general: 0,
+        };
+        por_hora.push(dato);
+    }
 
     // 2. Resumen por medio de pago
     const queryMedios = `
